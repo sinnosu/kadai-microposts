@@ -17,9 +17,7 @@ class User < ApplicationRecord
   # お気に入り機能
   has_many :favorites
   has_many :favors, through: :favorites, source: :micropost
-  has_many :reverses_of_favorite, class_name: 'Favorite', foreign_key: 'micropost_id'
-  has_many :favored, through: :reverses_of_favorite, source: :user
-  
+
   # フォロー処理
   def follow(other_user)
     # 自分自身はフォローしないよ

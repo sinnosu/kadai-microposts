@@ -14,6 +14,12 @@ class User < ApplicationRecord
   has_many :reverses_of_relationship, class_name: 'Relationship', foreign_key: 'follow_id'
   has_many :followers, through: :reverses_of_relationship, source: :user
   
+  # お気に入り機能
+  has_many :favorites
+  has_many :favors, through: :favorites, source: :micropost
+  has_many :reverses_of_favorite, class_name: 'Favorite', foreign_key: 'micropost_id'
+  has_many :favored, through: :reverses_of_favorite, source: :user
+  
   # フォロー処理
   def follow(other_user)
     # 自分自身はフォローしないよ
@@ -36,5 +42,20 @@ class User < ApplicationRecord
   # タイムライン用のマイクロポストを取得する
   def feed_microposts
     Micropost.where(user_id: self.following_ids + [self.id])
+  end
+  
+  # お気に入り登録
+  def favorite(micropost)
+    # すでに登録されていない場合は登録する。登録されていたらインスタンスを返却
+    self.favorites.find_or_create_by(micropost_id: micropost.id)
+  end
+  # お気に入り解除
+  def unfavorite(micropost)
+    favorite = self.favorites.find_by(micropost_id: micropost.id)
+    favorite.destroy if favorite
+  end
+  # お気に入り確認
+  def favor?(micropost)
+    self.favors.include?(micropost)
   end
 end

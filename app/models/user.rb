@@ -15,7 +15,7 @@ class User < ApplicationRecord
   has_many :followers, through: :reverses_of_relationship, source: :user
   
   # お気に入り機能
-  has_many :favorites
+  has_many :favorites, dependent: :destroy
   has_many :favors, through: :favorites, source: :micropost
 
   # フォロー処理
